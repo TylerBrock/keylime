@@ -1,0 +1,29 @@
+{
+    "workbench.colorTheme": "Base16 Tomorrow Night",
+    "editor.rulers": [
+        100
+    ],
+    "editor.minimap.enabled": false,
+    "C_Cpp.default.cppStandard": "c++17",
+    "C_Cpp.default.cStandard": "c11",
+    "C_Cpp.default.intelliSenseMode": "gcc-x64",
+    "C_Cpp.autocomplete": "Disabled",
+    "C_Cpp.formatting": "Disabled",
+    "C_Cpp.errorSquiggles": "Disabled",
+    "C_Cpp.intelliSenseEngine": "Disabled",
+    "clangd.arguments": [
+        "--background-index=true",
+        "--suggest-missing-includes",
+        "--header-insertion=never",
+        "--compile-commands-dir=${workspaceFolder}/bazel-bin/kv",
+    ],
+    "clangd.path": "/Users/tbrock/Library/Application Support/Code/User/globalStorage/llvm-vs-code-extensions.vscode-clangd/install/15.0.3/clangd_15.0.3/bin/clangd",
+    "[javascript]": {
+        "editor.defaultFormatter": "xaver.clang-format"
+    },
+    "editor.formatOnSave": true,
+    "[cpp]": {
+        "editor.defaultFormatter": "xaver.clang-format"
+    },
+    "clangd.checkUpdates": true,
+}
