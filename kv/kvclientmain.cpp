@@ -22,12 +22,12 @@ int main(int argc, char **argv) {
     KVStoreClient* clients[] {&client, &asyncClient};
 
     for (auto client : clients) {
-        auto status = client->set("Tyler", "Brock");
+        client->set("Tyler", "Brock");
         auto response = client->get("Tyler");
         std::cout << response << std::endl;
 
-        status = client->set("lol", "1");
-        status = client->incr("lol", 2);
+        client->set("lol", "1");
+        client->incr("lol", 2);
         response = client->get("lol");
 
         std::cout << response << std::endl;

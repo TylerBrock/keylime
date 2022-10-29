@@ -6,9 +6,13 @@ load("@com_grail_bazel_output_base_util//:defs.bzl", "OUTPUT_BASE")
 compilation_database(
     name = "compdb",
     targets = [
+        "//kv:wtcpp",
         "//kv:server",
         "//kv:client",
+        "//kv:test",
+        "//kv:bench",
     ],
+    testonly=True,
     # OUTPUT_BASE is a dynamic value that will vary for each user workspace.
     # If you would like your build outputs to be the same across users, then
     # skip supplying this value, and substitute the default constant value
@@ -30,10 +34,22 @@ cpp_grpc_library(
     protos = ["//kv/protos:kv_proto"],
 )
 
+cc_library(
+    name = "wtcpp",
+    hdrs = ["wiredtiger.hpp"],
+    deps = [":wiredtiger"]
+)
+
+cc_binary(
+    name = "wtcppbin",
+    srcs = ["wiredtiger.cpp"],
+    deps = [":wiredtiger", ":wtcpp"],
+)
+
 cc_binary(
     name = "server",
     srcs = ["kvserver.cpp"],
-    deps = [":kv_cpp_grpc_lib"],
+    deps = [":kv_cpp_grpc_lib", ":wtcpp"],
 )
 
 cc_library(
@@ -57,13 +73,13 @@ cc_binary(
 )
 
 cc_test(
-  name = "bench",
-  srcs = ["kvbench.cpp"],
-  deps = ["@com_google_benchmark//:benchmark_main", ":client_lib"],
+    name = "bench",
+    srcs = ["kvbench.cpp"],
+    deps = ["@com_google_benchmark//:benchmark_main", ":client_lib"],
 )
 
-cc_binary(
-    name = "wtcpp",
-    srcs = ["wiredtiger.cpp"],
-    deps = [":wiredtiger"]
+cc_test(
+    name = "test",
+    srcs = ["kvtest.cpp"],
+    deps = ["@com_google_googletest//:gtest_main", ":client_lib", ":client_async_lib"]
 )

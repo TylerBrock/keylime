@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 #include <unordered_map>
 
@@ -8,6 +7,8 @@
 
 #include "kv/protos/kv.grpc.pb.h"
 #include "kv/protos/kv.pb.h"
+
+#include "wiredtiger.hpp"
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -44,7 +45,6 @@ class KVStoreService final : public KVStore::Service {
     int int_val = stoi(val);
     int_val += incr;
     data[key] = std::to_string(int_val);
-    std::cout << data[key] << std::endl;
     res->set_new_val(int_val);
     res->set_ok(true);
     return Status::OK;
