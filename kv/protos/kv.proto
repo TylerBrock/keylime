@@ -11,6 +11,14 @@ message SetResponse {
     bool ok = 1;
 }
 
+message UnsetRequest {
+    string key = 1;
+}
+
+message UnsetResponse { 
+    bool ok = 1;
+}
+
 message IncrRequest {
     string key = 1;
     int64 incr = 2;

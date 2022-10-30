@@ -1,4 +1,5 @@
 #include <string>
+#include <mutex>
 #include <unordered_map>
 
 #include <grpcpp/ext/proto_server_reflection_plugin.h>
@@ -17,8 +18,10 @@ using grpc::Status;
 
 using std::string;
 using std::unordered_map;
+using std::mutex;
 
 unordered_map<string, string> data;
+mutex mtx;
 
 namespace kv {
 
@@ -26,14 +29,27 @@ class KVStoreService final : public KVStore::Service {
   Status Set(ServerContext *ctx, const SetRequest *req, SetResponse *res) {
     auto &key = req->key();
     auto &value = req->value();
+    mtx.lock();
     data[key] = value;
+    mtx.unlock();
+    res->set_ok(true);
+    return Status::OK;
+  }
+
+  Status Unset(ServerContext *ctx, const UnsetRequest *req, UnsetResponse *res) {
+    auto& key = req->key();
+    mtx.lock();
+    data.erase(key);
+    mtx.unlock();
     res->set_ok(true);
     return Status::OK;
   }
 
   Status Get(ServerContext *ctx, const GetRequest *req, GetResponse *res) {
     auto &key = req->key();
+    mtx.lock();
     auto &value = data[key];
+    mtx.unlock();
     res->set_value(value);
     return Status::OK;
   }
@@ -41,10 +57,12 @@ class KVStoreService final : public KVStore::Service {
   Status Incr(ServerContext *ctx, const IncrRequest *req, IncrResponse *res) {
     auto &key = req->key();
     auto incr = req->incr();
+    mtx.lock();
     auto &val = data[key];
     int int_val = stoi(val);
     int_val += incr;
     data[key] = std::to_string(int_val);
+    mtx.unlock();
     res->set_new_val(int_val);
     res->set_ok(true);
     return Status::OK;
