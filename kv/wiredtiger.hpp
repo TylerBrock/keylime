@@ -9,12 +9,17 @@
 
 namespace wiredtiger {
 
-using std::unique_ptr;
-
 class Cursor {
 public:
     Cursor(WT_CURSOR* cursor) : _cursor(cursor) {}
-    ~Cursor() { close(); }
+    Cursor(Cursor&& rhs) {
+        _cursor = rhs._cursor;
+        rhs._cursor = nullptr;
+    }
+    Cursor(const Cursor&) = delete;
+    void operator=(Cursor) = delete;
+    void operator=(Cursor&&) = delete;
+    ~Cursor() { if (_cursor) { close(); } }
     void set(const std::string& key, const std::string& value) {
         _cursor->set_key(_cursor, key.c_str());
         _cursor->set_value(_cursor, value.c_str());
@@ -49,6 +54,13 @@ private:
 class Session {
 public:
     Session(WT_SESSION* session) : _session(session) {}
+    Session(Session&& rhs) {
+        _session = rhs._session;
+        rhs._session = nullptr;
+    }
+    Session(const Session&) = delete;
+    void operator=(Session) = delete;
+    void operator=(Session&&) = delete;
     ~Session() { _session->close(_session, nullptr); }
     static std::string tableName(const std::string& name) {
         std::stringstream ss;
@@ -73,6 +85,10 @@ public:
         int ret = _session->rollback_transaction(_session, nullptr);
         std::cout << "[TXN] rolled back transaction: " << ret << std::endl;
     }
+    void checkpoint() {
+        int ret = _session->checkpoint(_session, nullptr);
+        std::cout << "[CHK] checkpointed: " << ret << std::endl;
+    }
     Cursor cursor(const std::string& name) {
         WT_CURSOR *cursor;
         _session->open_cursor(_session, tableName(name).c_str(), nullptr, nullptr, &cursor);
@@ -85,7 +101,7 @@ private:
 class Connection {
 public:
     Connection(const std::string& home) {
-        wiredtiger_open(home.c_str(), nullptr, "create", &_conn);
+        wiredtiger_open(home.c_str(), nullptr, "create,log=(enabled)", &_conn);
     }
     ~Connection() { _conn->close(_conn, nullptr); }
 

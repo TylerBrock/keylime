@@ -1,6 +1,5 @@
 #include <string>
 #include <mutex>
-#include <unordered_map>
 
 #include <grpcpp/ext/proto_server_reflection_plugin.h>
 #include <grpcpp/grpcpp.h>
@@ -17,20 +16,27 @@ using grpc::ServerContext;
 using grpc::Status;
 
 using std::string;
-using std::unordered_map;
 using std::mutex;
 
-unordered_map<string, string> data;
 mutex mtx;
 
 namespace kv {
 
 class KVStoreService final : public KVStore::Service {
+public:
+  KVStoreService(wiredtiger::Session& session, wiredtiger::Cursor& cursor) :
+    _session(std::move(session)),
+    _cursor(std::move(cursor))
+  {}
+
+private:
   Status Set(ServerContext *ctx, const SetRequest *req, SetResponse *res) {
     auto &key = req->key();
     auto &value = req->value();
     mtx.lock();
-    data[key] = value;
+    _session.begin_transaction();
+    _cursor.set(key, value);
+    _session.commit_transaction();
     mtx.unlock();
     res->set_ok(true);
     return Status::OK;
@@ -38,9 +44,7 @@ class KVStoreService final : public KVStore::Service {
 
   Status Unset(ServerContext *ctx, const UnsetRequest *req, UnsetResponse *res) {
     auto& key = req->key();
-    mtx.lock();
-    data.erase(key);
-    mtx.unlock();
+    //data.erase(key);
     res->set_ok(true);
     return Status::OK;
   }
@@ -48,9 +52,9 @@ class KVStoreService final : public KVStore::Service {
   Status Get(ServerContext *ctx, const GetRequest *req, GetResponse *res) {
     auto &key = req->key();
     mtx.lock();
-    auto &value = data[key];
+    auto value = _cursor.get(key);
     mtx.unlock();
-    res->set_value(value);
+    res->set_value(value.c_str());
     return Status::OK;
   }
 
@@ -58,22 +62,34 @@ class KVStoreService final : public KVStore::Service {
     auto &key = req->key();
     auto incr = req->incr();
     mtx.lock();
-    auto &val = data[key];
+    _session.begin_transaction();
+    auto val = _cursor.get(key);
     int int_val = stoi(val);
     int_val += incr;
-    data[key] = std::to_string(int_val);
+    _cursor.set(key, std::to_string(int_val));
+    _session.commit_transaction();
     mtx.unlock();
     res->set_new_val(int_val);
     res->set_ok(true);
     return Status::OK;
   }
+
+  wiredtiger::Session _session;
+  wiredtiger::Cursor _cursor;
 };
 
 } // namespace kv
 
 int main(int argc, char *argv[]) {
+  const char* home = "./data";
+  wiredtiger::Connection conn(home);
+  auto session = conn.getSession();
+  //session.drop("tyler");
+  session.create("tyler");
+  auto cursor = session.cursor("tyler");
+
   std::string server_address("0.0.0.0:50051");
-  kv::KVStoreService service;
+  kv::KVStoreService service(session, cursor);
 
   grpc::EnableDefaultHealthCheckService(true);
   grpc::reflection::InitProtoReflectionServerBuilderPlugin();
