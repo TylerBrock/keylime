@@ -10,8 +10,8 @@
 
 #include "wiredtiger.hpp"
 
-using grpc::Server;
-using grpc::ServerBuilder;
+namespace kv {
+
 using grpc::ServerContext;
 using grpc::Status;
 
@@ -19,8 +19,6 @@ using std::string;
 using std::mutex;
 
 mutex mtx;
-
-namespace kv {
 
 class KVStoreService final : public KVStore::Service {
 public:
@@ -81,6 +79,9 @@ private:
 } // namespace kv
 
 int main(int argc, char *argv[]) {
+  using grpc::Server;
+  using grpc::ServerBuilder;
+
   const char* home = "./data";
   wiredtiger::Connection conn(home);
   auto session = conn.getSession();

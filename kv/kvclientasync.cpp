@@ -1,9 +1,10 @@
 #include "kvclientasync.hpp"
 
-using grpc::Status;
-using grpc::ClientContext;
-
 namespace kv {
+
+    using grpc::Status;
+    using grpc::ClientContext;
+
     bool KVStoreAsyncClient::set(const string& key, const string& value) {
         SetRequest req;
         req.set_key(key);

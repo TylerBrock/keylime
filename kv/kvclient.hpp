@@ -7,13 +7,13 @@
 
 #include "kv/protos/kv.grpc.pb.h"
 
+namespace kv {
+
 using std::shared_ptr;
 using std::string;
 using std::unique_ptr;
 
 using grpc::Channel;
-
-namespace kv {
 
 class KVStoreClient {
 public:

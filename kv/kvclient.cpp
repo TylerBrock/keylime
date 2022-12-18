@@ -6,10 +6,10 @@
 
 using std::string;
 
+namespace kv {
+
 using grpc::ClientContext;
 using grpc::Status;
-
-namespace kv {
 
 bool KVStoreClient::set(const string &key, const string &value) {
   SetRequest req;
