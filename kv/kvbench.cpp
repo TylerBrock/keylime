@@ -11,7 +11,7 @@ using grpc::InsecureChannelCredentials;
 
 static void BM_KVClientSet(benchmark::State &state) {
   // Perform setup here
-  string target = "localhost:50051";
+  const string target = "localhost:50051";
 
   auto channel = CreateChannel(target, InsecureChannelCredentials());
   auto client = KVStoreClient(channel);
@@ -24,7 +24,7 @@ static void BM_KVClientSet(benchmark::State &state) {
 
 static void BM_KVClientGet(benchmark::State &state) {
   // Perform setup here
-  string target = "localhost:50051";
+  const string target = "localhost:50051";
 
   auto channel = CreateChannel(target, InsecureChannelCredentials());
   auto client = KVStoreClient(channel);
