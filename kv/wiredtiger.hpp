@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <memory>
+#include <optional>
 
 #include "kv/libwiredtiger/include/wiredtiger.h"
 
@@ -12,7 +13,7 @@ namespace wiredtiger {
 class Cursor {
 public:
     Cursor(WT_CURSOR* cursor) : _cursor(cursor) {}
-    Cursor(Cursor&& rhs) {
+    Cursor(Cursor&& rhs) : _cursor(nullptr) {
         _cursor = rhs._cursor;
         rhs._cursor = nullptr;
     }
@@ -25,11 +26,16 @@ public:
         _cursor->set_value(_cursor, value.c_str());
         _cursor->insert(_cursor);
     }
-    std::string get(const std::string& target) {
+    void unset(const std::string& key) {
+        seek(key);
+        _cursor->remove(_cursor);
+    }
+    std::string get(const std::string& key) {
         const char *value;
-        _cursor->reset(_cursor);
-        _cursor->set_key(_cursor, target.c_str());
-        _cursor->search(_cursor);
+        auto ret = seek(key);
+        if (ret == WT_NOTFOUND) {
+            return "";
+        }
         _cursor->get_value(_cursor, &value);
         return value;
     }
@@ -48,13 +54,18 @@ public:
     }
 
 private:
+    int seek(const std::string& key) {
+        _cursor->reset(_cursor);
+        _cursor->set_key(_cursor, key.c_str());
+        return _cursor->search(_cursor);
+    }
     WT_CURSOR* _cursor;
 };
 
 class Session {
 public:
     Session(WT_SESSION* session) : _session(session) {}
-    Session(Session&& rhs) {
+    Session(Session&& rhs) : _session(nullptr) {
         _session = rhs._session;
         rhs._session = nullptr;
     }
