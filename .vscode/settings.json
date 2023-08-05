@@ -17,7 +17,6 @@
         "--header-insertion=never",
         "--compile-commands-dir=${workspaceFolder}/bazel-bin/kv",
     ],
-    "clangd.path": "/Users/tbrock/Library/Application Support/Code/User/globalStorage/llvm-vs-code-extensions.vscode-clangd/install/15.0.3/clangd_15.0.3/bin/clangd",
     "[javascript]": {
         "editor.defaultFormatter": "xaver.clang-format"
     },
