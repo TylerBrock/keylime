@@ -42,7 +42,9 @@ private:
 
   Status Unset(ServerContext *ctx, const UnsetRequest *req, UnsetResponse *res) {
     auto& key = req->key();
-    //data.erase(key);
+    mtx.lock();
+    _cursor.unset(key);
+    mtx.unlock();
     res->set_ok(true);
     return Status::OK;
   }

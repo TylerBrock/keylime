@@ -39,6 +39,7 @@ message GetResponse {
 
 service KVStore {
     rpc Set(SetRequest) returns (SetResponse) {}
+    rpc Unset(UnsetRequest) returns (UnsetResponse) {}
     rpc Get(GetRequest) returns (GetResponse) {}
     rpc Incr(IncrRequest) returns (IncrResponse) {}
     //rpc Monitor(GetRequest) returns (stream GetResponse) {}

@@ -41,6 +41,20 @@ TEST(KVTest, Incr) {
   }
 }
 
+TEST(KVTest, Unset) {
+  for (auto client : clients) {
+    auto status = client->set("lol", "1");
+    auto response = client->get("lol");
+    EXPECT_EQ(status, true);
+    EXPECT_STREQ(response.c_str(), "1");
+
+    status = client->unset("lol");
+    response = client->get("lol");
+    EXPECT_EQ(status, true);
+    EXPECT_STREQ(response.c_str(), "");
+  }
+}
+
 TEST(KVTest, ConcurrentIncr) {
   for (auto client : clients) {
     client->set("lol", "0");

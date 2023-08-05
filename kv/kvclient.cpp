@@ -22,6 +22,16 @@ bool KVStoreClient::set(const string &key, const string &value) {
   return status.ok();
 }
 
+bool KVStoreClient::unset(const string &key) {
+  UnsetRequest req;
+  req.set_key(key);
+
+  UnsetResponse res;
+  ClientContext ctx;
+  auto status = stub_->Unset(&ctx, req, &res);
+  return status.ok();
+}
+
 string KVStoreClient::get(const string &key) {
   GetRequest req;
   req.set_key(key);

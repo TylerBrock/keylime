@@ -21,6 +21,7 @@ public:
       : stub_(KVStore::NewStub(channel)){};
 
   virtual bool set(const string &key, const string &value);
+  virtual bool unset(const string &key);
   virtual string get(const string &key);
   virtual bool incr(const string &key, const int64_t amount);
 
