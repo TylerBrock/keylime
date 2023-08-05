@@ -85,6 +85,11 @@ int main(int argc, char *argv[]) {
   using grpc::ServerBuilder;
 
   const char* home = "./data";
+  if (argc > 1) {
+    home = argv[1];
+  }
+  std::cout << "home: " << home << std::endl;
+
   wiredtiger::Connection conn(home);
   auto session = conn.getSession();
   //session.drop("tyler");
