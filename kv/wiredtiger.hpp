@@ -4,7 +4,6 @@
 #include <string>
 #include <sstream>
 #include <memory>
-#include <optional>
 
 #include "kv/libwiredtiger/include/wiredtiger.h"
 
