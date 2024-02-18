@@ -1,1 +1,3 @@
 build --action_env=BAZEL_CXXOPTS="-std=c++17" --features=-layering_check
+build --cxxopt=-std=c++17
+build --host_cxxopt=-std=c++17

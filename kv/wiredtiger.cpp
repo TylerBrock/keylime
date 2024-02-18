@@ -1,8 +1,6 @@
 #include <iostream>
 #include <string>
 
-#include "kv/libwiredtiger/include/wiredtiger.h"
-
 #include "wiredtiger.hpp"
 
 int main() {

@@ -3,7 +3,6 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <memory>
 
 #include "kv/libwiredtiger/include/wiredtiger.h"
 
