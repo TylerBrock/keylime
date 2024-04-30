@@ -25,6 +25,8 @@ public:
   virtual string get(const string &key);
   virtual bool incr(const string &key, const int64_t amount);
 
+  virtual ~KVStoreClient() {};
+
 protected:
   unique_ptr<KVStore::Stub> stub_;
 };

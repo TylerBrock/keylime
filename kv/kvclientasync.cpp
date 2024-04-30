@@ -44,8 +44,9 @@ namespace kv {
         AsyncIncrResponse rpc = stub_->AsyncIncr(&ctx, req, &cq_);
 
         Status status;
-        rpc->Finish(&res, &status, (void*)1);
-        getResponse((void*)1);
+        auto tag = getUnique();
+        rpc->Finish(&res, &status, (void*)tag);
+        getResponse((void*)tag);
         return status.ok();
     }
 }
